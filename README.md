@@ -15,7 +15,7 @@
   ```
 - Run the following command to build the Docker image.
   ```
-  docker build -t navigator:v1 .
+  sudo docker build -t navigator:v1 .
   ```
 - Run the Docker image.
   ```
