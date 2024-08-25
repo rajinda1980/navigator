@@ -22,6 +22,7 @@
         <validation.api>2.0.1.Final</validation.api>
         <project.lombok>1.18.28</project.lombok>
         <maven.plugning>3.3.2</maven.plugning>
+        <swagger.ui>2.0.3</swagger.ui>
     </properties>
 
     <dependencies>
@@ -77,7 +78,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.0.3</version>
+            <version>${swagger.ui}</version>
         </dependency>
     </dependencies>
 
