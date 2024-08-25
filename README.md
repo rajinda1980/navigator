@@ -27,6 +27,10 @@
   > navigator:v1: The name and tag of the Docker image. <br>
 
 ### How to Test the application
+- Swagger provides information about the payload. Please follow the URL below to view the payload details
+  ```
+  http://localhost:8090/swagger-ui/index.html
+  ```
 - Open Postman.
 - Type the following url:
   ```
