@@ -10,7 +10,7 @@ import java.util.*;
 @Service
 public class HooverServiceImpl implements HooverService {
 
-    public HooverResponse cleanRoom(HooverRequest request) {
+    public HooverResponse cleanRoom(HooverRequest request) throws Exception {
         List<Integer> roomSize = request.getRoomSize();
         List<Integer> startCoords = request.getCoords();
         List<List<Integer>> patches = null == request.getPatches() ? new ArrayList<>() : request.getPatches();

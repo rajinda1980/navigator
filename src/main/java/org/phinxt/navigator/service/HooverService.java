@@ -4,5 +4,5 @@ import org.phinxt.navigator.dto.HooverRequest;
 import org.phinxt.navigator.dto.HooverResponse;
 
 public interface HooverService {
-    HooverResponse cleanRoom(HooverRequest hooverRequest);
+    HooverResponse cleanRoom(HooverRequest hooverRequest) throws Exception;
 }
