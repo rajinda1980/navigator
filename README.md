@@ -7,7 +7,7 @@
 - Open your terminal window.
 - Download the application from GitHub.
   ```
-  git clone https://github.com/rajinda1980/navigator.git
+  sudo git clone https://github.com/rajinda1980/navigator.git
   ```
 - Navigate to the "navigator" root folder.
   ```
