@@ -22,7 +22,7 @@ public class HooverController {
     }
 
     @PostMapping("clean")
-    public ResponseEntity<HooverResponse> cleanRoom(@Valid @RequestBody HooverRequest request) {
+    public ResponseEntity<HooverResponse> cleanRoom(@Valid @RequestBody HooverRequest request) throws Exception {
         HooverResponse response = hooverService.cleanRoom(request);
         return ResponseEntity.ok(response);
     }

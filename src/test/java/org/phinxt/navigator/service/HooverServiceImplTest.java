@@ -35,7 +35,7 @@ public class HooverServiceImplTest {
 
     @DisplayName("Should return the final coordinates with cleaned patches")
     @Test
-    void shouldReturnFinalCoordinateWithCleanedPatches() {
+    void shouldReturnFinalCoordinateWithCleanedPatches() throws Exception {
         HooverResponse response = hooverService.cleanRoom(request);
         Assertions.assertEquals(1, response.getPatches());
         Assertions.assertEquals(List.of(1, 3), response.getCoords());
@@ -43,7 +43,7 @@ public class HooverServiceImplTest {
 
     @DisplayName("Should return coordinates and 0 output patches if input patches are empty")
     @Test
-    void shouldReturnCoordWithEmptyInputPatches() {
+    void shouldReturnCoordWithEmptyInputPatches() throws Exception {
         request.setPatches(new ArrayList<>());
         HooverResponse response = hooverService.cleanRoom(request);
         Assertions.assertEquals(0, response.getPatches());
@@ -52,7 +52,7 @@ public class HooverServiceImplTest {
 
     @DisplayName("Should return coordinates and 0 output patches if input patches are null")
     @Test
-    void shouldReturnCoordWithNullInputPatches() {
+    void shouldReturnCoordWithNullInputPatches() throws Exception {
         request.setPatches(null);
         HooverResponse response = hooverService.cleanRoom(request);
         Assertions.assertEquals(0, response.getPatches());
@@ -61,7 +61,7 @@ public class HooverServiceImplTest {
 
     @DisplayName("Should return coordinates for empty instructions")
     @Test
-    void shouldReturnCoordsForEmptyInstructions() {
+    void shouldReturnCoordsForEmptyInstructions() throws Exception {
         request.setInstructions(Strings.EMPTY);
         HooverResponse response = hooverService.cleanRoom(request);
         Assertions.assertEquals(List.of(1, 2), response.getCoords());
@@ -70,7 +70,7 @@ public class HooverServiceImplTest {
 
     @DisplayName("Should return coordinates for null instructions")
     @Test
-    void shouldReturnCoordsForNullInstructions() {
+    void shouldReturnCoordsForNullInstructions() throws Exception {
         request.setInstructions(null);
         HooverResponse response = hooverService.cleanRoom(request);
         Assertions.assertEquals(List.of(1, 2), response.getCoords());
@@ -79,7 +79,7 @@ public class HooverServiceImplTest {
 
     @DisplayName("Should return coordinates and patches for boundary checks")
     @Test
-    void shouldReturnCoordsAndPatchesForBoundaryCheck() {
+    void shouldReturnCoordsAndPatchesForBoundaryCheck() throws Exception {
         request.setRoomSize(List.of(3, 3));
         request.setCoords(List.of(1, 1));
         request.setPatches(

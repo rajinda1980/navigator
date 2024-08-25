@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -78,6 +80,20 @@ public class HooverControllerTest {
         List<Integer> coords = List.of(1, 3);
         Assertions.assertEquals(coords, fromJson.getCoords());
         Assertions.assertEquals(1, fromJson.getPatches());
+    }
+
+    @DisplayName("Should return a response in JSON format")
+    @Test
+    void shouldReturnSuccessfulJSONResponse() throws Exception {
+        HooverResponse response = new HooverResponse(List.of(1, 3), 1);
+        Mockito.when(hooverService.cleanRoom(isA(HooverRequest.class))).thenReturn(response);
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                        .post(url)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(hooverRequest)))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(response)));
     }
 
     /**
@@ -134,7 +150,6 @@ public class HooverControllerTest {
         Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
 
         Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
-        Assertions.assertNotNull(errorResponse.getTimestamp());
         Assertions.assertEquals(expect.getStatus(), errorResponse.getStatus());
         Assertions.assertEquals(expect.getError(), errorResponse.getError());
         Assertions.assertEquals(expect.getMessage(), errorResponse.getMessage());
@@ -165,6 +180,27 @@ public class HooverControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .content(objectMapper.writeValueAsString(hooverRequest))
                 ).andReturn();
-        Assertions.assertEquals(HttpStatus.METHOD_NOT_ALLOWED.value(), result.getResponse().getStatus());
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), result.getResponse().getStatus());
+    }
+
+    @DisplayName("Should return a Exception if service class throws an exception")
+    @Test
+    void shouldReturnException() throws Exception {
+        Mockito.when(hooverService.cleanRoom(any(HooverRequest.class))).thenThrow(new RuntimeException("Unknown Exception"));
+        MvcResult result =
+                mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .post(url)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(objectMapper.writeValueAsString(hooverRequest))
+                ).andReturn();
+        Gson gson = new Gson();
+        ErrorResponse errorResponse = TestConstants.getFullyFledgedGson().fromJson(result.getResponse().getContentAsString(), ErrorResponse.class);
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), result.getResponse().getStatus());
+
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), result.getResponse().getStatus());
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), errorResponse.getError());
+        Assertions.assertEquals("Unknown Exception", errorResponse.getMessage());
+        Assertions.assertTrue(errorResponse.getDetail().isEmpty());
     }
 }

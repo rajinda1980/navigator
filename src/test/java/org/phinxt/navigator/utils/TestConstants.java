@@ -19,6 +19,8 @@ public abstract class TestConstants {
     public static final String INVALID_INSTRUCTION = "Instructions cannot be empty";
     public static final String INVALID_CONTENT_TYPE = "Invalid Content-Type. Content-Type must be application/json";
 
+    public static final String HOST = "localhost";
+
     public static Gson getFullyFledgedGson() {
         return new GsonBuilder().registerTypeAdapter(LocalDateTime.class, (JsonDeserializer<LocalDateTime>)
                 (json, type, jsonDeserializationContext) -> {
