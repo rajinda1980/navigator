@@ -29,7 +29,7 @@
 ### How to Test the application
 - Swagger provides information about the payload. Please follow the URL below to view the payload details
   ```
-  http://localhost:8090/swagger-ui/index.html
+  http://localhost:8080/swagger-ui/index.html
   ```
 - Open Postman.
 - Type the following url:
