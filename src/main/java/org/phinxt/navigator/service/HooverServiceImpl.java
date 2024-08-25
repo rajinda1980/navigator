@@ -1,13 +1,11 @@
 package org.phinxt.navigator.service;
 
+import org.apache.logging.log4j.util.Strings;
 import org.phinxt.navigator.dto.HooverRequest;
 import org.phinxt.navigator.dto.HooverResponse;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class HooverServiceImpl implements HooverService {
@@ -15,8 +13,8 @@ public class HooverServiceImpl implements HooverService {
     public HooverResponse cleanRoom(HooverRequest request) {
         List<Integer> roomSize = request.getRoomSize();
         List<Integer> startCoords = request.getCoords();
-        List<List<Integer>> patches = request.getPatches();
-        String instructions = request.getInstructions();
+        List<List<Integer>> patches = null == request.getPatches() ? new ArrayList<>() : request.getPatches();
+        String instructions = null == request.getInstructions() ? Strings.EMPTY : request.getInstructions();
 
         Set<List<Integer>> dirtPatches = new HashSet<>(patches);
         int cleanedPatches = 0;
@@ -32,9 +30,9 @@ public class HooverServiceImpl implements HooverService {
                 case 'W': if (x > 0) x--; break;
             }
 
-            // Coordinate of x and y for the current direction
+            // Coordinates of x and y for the current direction
             List<Integer> currentPos = Arrays.asList(x, y);
-            // Remove coordinate if it is cleaned
+            // Remove the coordinate if it is cleaned
             if (dirtPatches.contains(currentPos)) {
                 dirtPatches.remove(currentPos);
                 cleanedPatches++;
