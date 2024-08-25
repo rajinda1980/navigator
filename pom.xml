@@ -19,6 +19,9 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <validation.api>2.0.1.Final</validation.api>
+        <project.lombok>1.18.28</project.lombok>
+        <maven.plugning>3.3.2</maven.plugning>
     </properties>
 
     <dependencies>
@@ -41,13 +44,13 @@
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
-            <version>2.0.1.Final</version>
+            <version>${validation.api}</version>
         </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.28</version>
+            <version>${project.lombok}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -68,7 +71,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.3.2</version>
+                <version>${maven.plugning}</version>
             </plugin>
         </plugins>
     </build>
