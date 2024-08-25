@@ -1,5 +1,6 @@
 package org.phinxt.navigator.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.phinxt.navigator.dto.HooverRequest;
 import org.phinxt.navigator.dto.HooverResponse;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
+@Slf4j
 public class HooverServiceImpl implements HooverService {
 
     public HooverResponse cleanRoom(HooverRequest request) throws Exception {
@@ -15,6 +17,7 @@ public class HooverServiceImpl implements HooverService {
         List<Integer> startCoords = request.getCoords();
         List<List<Integer>> patches = null == request.getPatches() ? new ArrayList<>() : request.getPatches();
         String instructions = null == request.getInstructions() ? Strings.EMPTY : request.getInstructions();
+        log.info(request.toString());
 
         Set<List<Integer>> dirtPatches = new HashSet<>(patches);
         int cleanedPatches = 0;
@@ -43,6 +46,7 @@ public class HooverServiceImpl implements HooverService {
         HooverResponse response = new HooverResponse();
         response.setCoords(Arrays.asList(x, y));
         response.setPatches(cleanedPatches);
+        log.info(response.toString());
 
         return response;
     }
