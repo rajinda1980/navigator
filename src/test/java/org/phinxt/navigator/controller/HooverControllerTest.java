@@ -11,11 +11,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.phinxt.navigator.dto.ErrorDetail;
-import org.phinxt.navigator.dto.ErrorResponse;
-import org.phinxt.navigator.dto.HooverRequest;
-import org.phinxt.navigator.dto.HooverResponse;
+import org.phinxt.navigator.advice.ValidatorException;
+import org.phinxt.navigator.dto.*;
 import org.phinxt.navigator.service.HooverService;
+import org.phinxt.navigator.utils.AppValidator;
 import org.phinxt.navigator.utils.TestConstants;
 import org.phinxt.navigator.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +28,12 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -49,6 +47,9 @@ public class HooverControllerTest {
 
     @MockBean
     private HooverService hooverService;
+
+    @MockBean
+    private AppValidator appValidator;
 
     private HooverRequest hooverRequest;
     private String url;
@@ -202,5 +203,114 @@ public class HooverControllerTest {
         Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), errorResponse.getError());
         Assertions.assertEquals("Unknown Exception", errorResponse.getMessage());
         Assertions.assertTrue(errorResponse.getDetail().isEmpty());
+    }
+
+    /**
+     * Value map
+     * @return argument list
+     */
+    static Stream<Arguments> shouldReturnValidationException() {
+        // For room size
+        HooverRequest rs_negative1 = new HooverRequest(List.of(-5, 5), List.of(1, 2), List.of(List.of(1, 0), List.of(2, 2), List.of(2, 3)), "NNESEESWNWW");
+        HooverRequest rs_negative2 = new HooverRequest(List.of(5, -5), List.of(1, 2), List.of(List.of(1, 0), List.of(2, 2), List.of(2, 3)), "NNESEESWNWW");
+        HooverRequest rs_negative3 = new HooverRequest(List.of(-5, -5), List.of(1, 2), List.of(List.of(1, 0), List.of(2, 2), List.of(2, 3)), "NNESEESWNWW");
+        List<ValidationError> rs_expect_list_neg = new ArrayList<>();
+        rs_expect_list_neg.add(new ValidationError(TestConstants.FIELD_NAME_ROOM_SIZE, TestConstants.NEGATIVE_ROOM_SIZE));
+        ValidatorException rs_exp_neg = new ValidatorException(rs_expect_list_neg);
+
+        HooverRequest rs_zero4 = new HooverRequest(List.of(0, 5), List.of(1, 2), List.of(List.of(1, 0), List.of(2, 2), List.of(2, 3)), "NNESEESWNWW");
+        HooverRequest rs_zero5 = new HooverRequest(List.of(5, 0), List.of(1, 2), List.of(List.of(1, 0), List.of(2, 2), List.of(2, 3)), "NNESEESWNWW");
+        HooverRequest rs_zero6 = new HooverRequest(List.of(0, 0), List.of(1, 2), List.of(List.of(1, 0), List.of(2, 2), List.of(2, 3)), "NNESEESWNWW");
+        List<ValidationError> rs_expect_list_zero = new ArrayList<>();
+        rs_expect_list_zero.add(new ValidationError(TestConstants.FIELD_NAME_ROOM_SIZE, TestConstants.ZERO_ROOM_SIZE));
+        ValidatorException rs_exp_zero = new ValidatorException(rs_expect_list_zero);
+
+        HooverRequest rs_neg_zero7 = new HooverRequest(List.of(-5, 0), List.of(1, 2), List.of(List.of(1, 0), List.of(2, 2), List.of(2, 3)), "NNESEESWNWW");
+        HooverRequest rs_neg_zero8 = new HooverRequest(List.of(0, -5), List.of(1, 2), List.of(List.of(1, 0), List.of(2, 2), List.of(2, 3)), "NNESEESWNWW");
+        List<ValidationError> rs_expect_list_neg_zero = new ArrayList<>();
+        rs_expect_list_neg_zero.add(new ValidationError(TestConstants.FIELD_NAME_ROOM_SIZE, TestConstants.NEGATIVE_ROOM_SIZE));
+        rs_expect_list_neg_zero.add(new ValidationError(TestConstants.FIELD_NAME_ROOM_SIZE, TestConstants.ZERO_ROOM_SIZE));
+        ValidatorException rs_exp_neg_zero = new ValidatorException(rs_expect_list_neg_zero);
+
+        // For coords
+        HooverRequest co_negative1 = new HooverRequest(List.of(5, 5), List.of(-1, 2), List.of(List.of(1, 0), List.of(2, 2), List.of(2, 3)), "NNESEESWNWW");
+        HooverRequest co_negative2 = new HooverRequest(List.of(5, 5), List.of(1, -2), List.of(List.of(1, 0), List.of(2, 2), List.of(2, 3)), "NNESEESWNWW");
+        HooverRequest co_negative3 = new HooverRequest(List.of(5, 5), List.of(-1, -2), List.of(List.of(1, 0), List.of(2, 2), List.of(2, 3)), "NNESEESWNWW");
+        List<ValidationError> co_expect_list_neg = new ArrayList<>();
+        co_expect_list_neg.add(new ValidationError(TestConstants.FIELD_NAME_COORDS, TestConstants.NEGATIVE_COORDS));
+        ValidatorException co_exp_neg = new ValidatorException(co_expect_list_neg);
+
+        // For patches
+        HooverRequest pa_negative1 = new HooverRequest(List.of(5, 5), List.of(1, 2), List.of(List.of(-1, 0), List.of(2, 2), List.of(2, 3)), "NNESEESWNWW");
+        HooverRequest pa_negative2 = new HooverRequest(List.of(5, 5), List.of(1, 2), List.of(List.of(1, 0), List.of(2, -2), List.of(2, 3)), "NNESEESWNWW");
+        HooverRequest pa_negative3 = new HooverRequest(List.of(5, 5), List.of(1, 2), List.of(List.of(1, 0), List.of(2, 2), List.of(-2, -3)), "NNESEESWNWW");
+        List<ValidationError> pa_expect_list_neg = new ArrayList<>();
+        pa_expect_list_neg.add(new ValidationError(TestConstants.FIELD_NAME_PATCHES, TestConstants.NEGATIVE_PATCHES));
+        ValidatorException pa_exp_neg = new ValidatorException(pa_expect_list_neg);
+
+        // For instructions
+        HooverRequest in_negative1 = new HooverRequest(List.of(5, 5), List.of(1, 2), List.of(List.of(1, 0), List.of(2, 2), List.of(2, 3)), "NNEMXSEESWNWWP");
+        List<ValidationError> in_expect_list_neg = new ArrayList<>();
+        in_expect_list_neg.add(new ValidationError(TestConstants.FIELD_NAME_INSTRUCTIONS, TestConstants.INVALID_INSTRUCTION_PATTERN));
+        ValidatorException in_exp_neg = new ValidatorException(in_expect_list_neg);
+
+        // For all
+        HooverRequest all = new HooverRequest(List.of(-5, 0), List.of(1, -2), List.of(List.of(1, 0), List.of(-2, -2), List.of(2, 3)), "NNESAXEEPSWNWW");
+        List<ValidationError> all_list = new ArrayList<>();
+        all_list.add(new ValidationError(TestConstants.FIELD_NAME_ROOM_SIZE, TestConstants.NEGATIVE_ROOM_SIZE));
+        all_list.add(new ValidationError(TestConstants.FIELD_NAME_COORDS, TestConstants.NEGATIVE_COORDS));
+        all_list.add(new ValidationError(TestConstants.FIELD_NAME_PATCHES, TestConstants.NEGATIVE_PATCHES));
+        all_list.add(new ValidationError(TestConstants.FIELD_NAME_INSTRUCTIONS, TestConstants.INVALID_INSTRUCTION_PATTERN));
+        all_list.add(new ValidationError(TestConstants.FIELD_NAME_ROOM_SIZE, TestConstants.ZERO_ROOM_SIZE));
+        ValidatorException all_ex = new ValidatorException(all_list);
+
+        return Stream.of(
+                    Arguments.of(rs_negative1, rs_exp_neg, rs_expect_list_neg),
+                    Arguments.of(rs_negative2, rs_exp_neg, rs_expect_list_neg),
+                    Arguments.of(rs_negative3, rs_exp_neg, rs_expect_list_neg),
+                    Arguments.of(rs_zero4, rs_exp_zero, rs_expect_list_zero),
+                    Arguments.of(rs_zero5, rs_exp_zero, rs_expect_list_zero),
+                    Arguments.of(rs_zero6, rs_exp_zero, rs_expect_list_zero),
+                    Arguments.of(rs_neg_zero7, rs_exp_neg_zero, rs_expect_list_neg_zero),
+                    Arguments.of(rs_neg_zero8, rs_exp_neg_zero, rs_expect_list_neg_zero),
+
+                    Arguments.of(co_negative1, co_exp_neg, co_expect_list_neg),
+                    Arguments.of(co_negative2, co_exp_neg, co_expect_list_neg),
+                    Arguments.of(co_negative3, co_exp_neg, co_expect_list_neg),
+
+                    Arguments.of(pa_negative1, pa_exp_neg, pa_expect_list_neg),
+                    Arguments.of(pa_negative2, pa_exp_neg, pa_expect_list_neg),
+                    Arguments.of(pa_negative3, pa_exp_neg, pa_expect_list_neg),
+
+                    Arguments.of(in_negative1, in_exp_neg, in_expect_list_neg),
+                    Arguments.of(all, all_ex, all_list)
+                );
+    }
+
+
+    @DisplayName("Should return validation exception for HooverRequest payload")
+    @ParameterizedTest
+    @MethodSource
+    void shouldReturnValidationException(HooverRequest request, ValidatorException exception, List<ValidationError> expected) throws Exception {
+        Mockito.doThrow(exception).when(appValidator).validatePayload(request);
+        MvcResult result =
+                mockMvc.perform(
+                        MockMvcRequestBuilders
+                                .post(url)
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(objectMapper.writeValueAsString(request))
+                ).andReturn();
+
+        Gson gson = new Gson();
+        ErrorResponse errorResponse = TestConstants.getFullyFledgedGson().fromJson(result.getResponse().getContentAsString(), ErrorResponse.class);
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
+
+        List<ErrorDetail> sexpect =
+                expected.stream()
+                        .map(e -> new ErrorDetail(e.getFieldName(), e.getMessage()))
+                        .sorted(Comparator.comparing(ErrorDetail::getIssue))
+                        .collect(Collectors.toList());
+        List<ErrorDetail> errors = errorResponse.getDetail().stream().sorted(Comparator.comparing(ErrorDetail::getIssue)).collect(Collectors.toList());
+        Assertions.assertEquals(sexpect, errors);
     }
 }
