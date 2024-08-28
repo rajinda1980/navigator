@@ -2,6 +2,7 @@
 
 ### Prerequisites
 - Docker
+- Maven
 
 ### Build and Run the Application
 - Open your terminal window.
@@ -25,8 +26,18 @@
   > -p 8080:8080: Maps port 8080 on your local machine to port 8080 inside the container. <br>
   > --name navigator-container: Assigns a name to the container (navigator-container). <br>
   > navigator:v1: The name and tag of the Docker image. <br>
+- The following log entry should be displayed if the application is running successfully.
+  ```
+  2024-08-28T19:52:01.689Z  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8090 (http) with context path '/'
+  2024-08-28T19:52:01.711Z  INFO 1 --- [           main] org.phinxt.navigator.NavigatorApp        : Started NavigatorApp in 2.686 seconds (process running for 3.22)
+  ```
 
 ### How to Test the application
+- Open the Docker log file if it is not already open in the terminal window
+  ```
+  sudo docker logs -f <container id>
+  Ex : sudo docker logs -f 89015aae79d9
+  ```
 - Swagger provides information about the payload. Please follow the URL below to view the payload details
   ```
   http://localhost:8080/swagger-ui/index.html
@@ -79,21 +90,65 @@
   }
   ```
 
-***
-### Useful commands
-- List Docker processes.
-  ```
-  sudo docker ps
-  ```
-- Show Docker log file.
-  ```
-  sudo docker logs -f 89015aae79d9
-  ```
-- Stop Docker container.
-  ```
-  sudo docker stop 89015aae79d9
-  ```
 
+### External parameters
+No external parameters are required to be provided.
+
+### How to run test cases
+- Navigate to the "navigator" root folder.
+- Run the following command
+  ```
+  mvn test
+  ```
+- The following log entry should be displayed if all the test cases are successful.
+  ```
+  [INFO] Results:
+  [INFO]
+  [INFO] Tests run: 82, Failures: 0, Errors: 0, Skipped: 0
+  [INFO]
+  [INFO] ------------------------------------------------------------------------
+  [INFO] BUILD SUCCESS
+  [INFO] ------------------------------------------------------------------------
+  [INFO] Total time:  9.607 s
+  ```
+- The unit test cases and integration test cases cover the following functionalities:
+  - Positive values
+  - Negative values
+  - Null values
+  - Empty values
+  - All validations
+  - Each individual unit of the application (controller class, validation class, service class, dispatcher class, and DTO classes)
+  - End-to-end flow
+
+***
+### How to Package and Run the Application if It Cannot Run with Docker
+- Navigate to the "navigator" root folder.
+- Run the following command
+  ```
+  mvn clean package
+  ```
+- The following log entry should be displayed if the application build successful.
+  ```
+  [INFO] --- spring-boot-maven-plugin:3.3.2:repackage (repackage) @ navigator ---
+  [INFO] Replacing main artifact /home/kafka/Application/Interview/navigator/target/navigator-1.0-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+  [INFO] The original artifact has been renamed to /home/kafka/Application/Interview/navigator/target/navigator-1.0-SNAPSHOT.jar.original
+  [INFO] ------------------------------------------------------------------------
+  [INFO] BUILD SUCCESS
+  [INFO] ------------------------------------------------------------------------
+  [INFO] Total time:  10.724 s
+  [INFO] Finished at: 2024-08-28T21:58:12+01:00
+  [INFO] ------------------------------------------------------------------------
+  ```
+- Navigate to target folder and run the following command to start the application
+  ```
+  java -jar navigator-1.0-SNAPSHOT.jar
+  ```
+- The following log entry should be displayed if the application is running successfully.
+  ```
+  2024-08-28T22:03:24.988+01:00  INFO 2824981 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8090 (http) with context path '/'
+  2024-08-28T22:03:25.008+01:00  INFO 2824981 --- [           main] org.phinxt.navigator.NavigatorApp        : Started NavigatorApp in 2.057 seconds (process running for 2.433)
+  ```
+  
 ***
 ### Assumptions
 
@@ -116,3 +171,18 @@
                 )
         )
    ```
+
+***
+### Useful commands
+- List Docker processes.
+  ```
+  sudo docker ps
+  ```
+- Show Docker log file.
+  ```
+  sudo docker logs -f 89015aae79d9
+  ```
+- Stop Docker container.
+  ```
+  sudo docker stop 89015aae79d9
+  ```
